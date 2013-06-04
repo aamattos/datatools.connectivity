@@ -213,7 +213,7 @@ public class DerbyCatalogTable extends JDBCTable {
 
 	public EList getTriggers() {
 		if(!this.triggerLoaded) this.loadTriggers();
-		return this.triggers;
+		return super.getTriggers();
 	}
 
 	protected Object findTrigger(Object[] list, String name){

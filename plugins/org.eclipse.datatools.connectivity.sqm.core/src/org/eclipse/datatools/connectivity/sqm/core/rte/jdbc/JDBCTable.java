@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.datatools.connectivity.sqm.core.definition.DataModelElementFactory;
 import org.eclipse.datatools.connectivity.sqm.core.definition.DatabaseDefinition;
@@ -50,6 +49,7 @@ import org.eclipse.datatools.modelbase.sql.tables.Column;
 import org.eclipse.datatools.modelbase.sql.tables.SQLTablesPackage;
 import org.eclipse.datatools.modelbase.sql.tables.Table;
 import org.eclipse.datatools.modelbase.sql.tables.impl.PersistentTableImpl;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -167,7 +167,7 @@ public class JDBCTable extends PersistentTableImpl implements ICatalogObject {
 		return internalGetPrimaryKey(super.getConstraints());
 	}
 
-	public List getUniqueConstraints() {
+	public EList<UniqueConstraint> getUniqueConstraints() {
 		synchronized (ucsLoaded) {
 			if (!ucsLoaded.booleanValue())
 				loadUniqueConstraints();
@@ -175,7 +175,7 @@ public class JDBCTable extends PersistentTableImpl implements ICatalogObject {
 		return internalGetUniqueConstraints(super.getConstraints());
 	}
 
-	public List getForeignKeys() {
+	public EList<ForeignKey> getForeignKeys() {
 		synchronized (fksLoaded) {
 			if (!fksLoaded.booleanValue())
 				loadForeignKeys();
@@ -378,23 +378,23 @@ public class JDBCTable extends PersistentTableImpl implements ICatalogObject {
 		return null;
 	}
 	
-	private List internalGetUniqueConstraints(Collection constraints) {
-		Vector uniqueConstraints = new Vector();
+	private EList<UniqueConstraint> internalGetUniqueConstraints(Collection constraints) {
+		EList<UniqueConstraint> uniqueConstraints = new BasicEList<UniqueConstraint>();
 		for( Iterator it = constraints.iterator(); it.hasNext(); ) {
 			Constraint currentConstraint = (Constraint)it.next();
 			if (currentConstraint instanceof UniqueConstraint) {
-				uniqueConstraints.add(currentConstraint);
+				uniqueConstraints.add((UniqueConstraint)currentConstraint);
 			}
 		}
 		return uniqueConstraints;
 	}
 	
-	private List internalGetForeignKeys(Collection constraints) {
-		Vector uniqueConstraints = new Vector();
+	private EList<ForeignKey> internalGetForeignKeys(Collection constraints) {
+		EList<ForeignKey> uniqueConstraints = new BasicEList<ForeignKey>();
 		for( Iterator it = constraints.iterator(); it.hasNext(); ) {
 			Constraint currentConstraint = (Constraint)it.next();
 			if (currentConstraint instanceof ForeignKey) {
-				uniqueConstraints.add(currentConstraint);
+				uniqueConstraints.add((ForeignKey)currentConstraint);
 			}
 		}
 		return uniqueConstraints;

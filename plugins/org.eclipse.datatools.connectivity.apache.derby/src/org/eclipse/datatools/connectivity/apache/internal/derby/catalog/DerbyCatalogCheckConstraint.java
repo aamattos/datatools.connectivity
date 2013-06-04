@@ -52,7 +52,7 @@ public class DerbyCatalogCheckConstraint extends CheckConstraintImpl implements 
 	
 	public SearchCondition getSearchCondition() {
 		if(!this.loaded) this.load();
-		return this.searchCondition;
+		return super.getSearchCondition();
 	}
 
 	public boolean eIsSet(EStructuralFeature eFeature) {

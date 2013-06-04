@@ -73,7 +73,7 @@ public class DerbyCatalogSynonym extends SynonymImpl implements ICatalogObject {
 			if (!columnsLoaded.booleanValue())
 				loadColumns();
 		}
-		return this.columns;
+		return super.getColumns();
 	}
 
 	protected JDBCTableColumnLoader createColumnLoader() {
@@ -138,7 +138,7 @@ public class DerbyCatalogSynonym extends SynonymImpl implements ICatalogObject {
 			this.getColumns();
 		}
 		else if (id==SQLTablesPackage.TABLE__COMMENTS) {
-			return comments != null;
+			return this.getComments()!= null;
 		}
 		
 		return super.eIsSet(eFeature);

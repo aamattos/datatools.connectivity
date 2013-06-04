@@ -29,7 +29,7 @@ public class DerbyCatalogTrigger extends TriggerImpl implements ICatalogObject {
 
 	public void refresh() {
 		if (this.columnLoaded) {
-			this.triggerColumn.clear();
+			this.getTriggerColumn().clear();
 			this.columnLoaded = false;
 		}
 		RefreshManager.getInstance().referesh(this);
@@ -37,7 +37,7 @@ public class DerbyCatalogTrigger extends TriggerImpl implements ICatalogObject {
 
 	public EList getTriggerColumn() {
 		if(!this.columnLoaded) this.loadColumn();
-		return this.triggerColumn;
+		return super.getTriggerColumn();
 	}
 
 	public boolean isSystemObject() {

@@ -46,7 +46,7 @@ public class JDBCForeignKey extends ForeignKeyImpl implements ICatalogObject {
 
 	public EList getEAnnotations() {
 		if(!this.eAnnotationLoaded) this.loadEAnnotations();
-		return this.eAnnotations;
+		return super.getEAnnotations();
 	}
 	
 	public Database getCatalogDatabase() {

@@ -206,7 +206,7 @@ public class JDBCTableConstraintLoader extends JDBCBaseLoader {
 						findColumn(rs.getString(COLUMN_COLUMN_NAME)));
 			}
 			for (Iterator it = columns.values().iterator(); it.hasNext();) {
-				pk.getMembers().add(it.next());
+				pk.getMembers().add((Column) it.next());
 			}
 			return pk;
 		}
@@ -289,7 +289,7 @@ public class JDBCTableConstraintLoader extends JDBCBaseLoader {
 				for (Iterator colIt = ((Map) constraintColumns
 						.get(uc.getName())).values().iterator(); colIt
 						.hasNext();) {
-					uc.getMembers().add(colIt.next());
+					uc.getMembers().add((Column) colIt.next());
 				}
 			}
 		}
@@ -420,7 +420,7 @@ public class JDBCTableConstraintLoader extends JDBCBaseLoader {
 				for (Iterator colIt = ((Map) constraintColumns
 						.get(fk.getName())).values().iterator(); colIt
 						.hasNext();) {
-					fk.getMembers().add(colIt.next());
+					fk.getMembers().add((Column) colIt.next());
 				}
 				initReferenceAnnotation(fk);
 			}

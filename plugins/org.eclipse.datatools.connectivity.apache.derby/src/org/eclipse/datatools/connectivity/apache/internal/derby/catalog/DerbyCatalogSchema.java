@@ -28,7 +28,6 @@ import org.eclipse.datatools.modelbase.derby.impl.DerbySchemaImpl;
 import org.eclipse.datatools.modelbase.sql.schema.Catalog;
 import org.eclipse.datatools.modelbase.sql.schema.Database;
 import org.eclipse.datatools.modelbase.sql.schema.SQLSchemaPackage;
-import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
@@ -240,30 +239,49 @@ public class DerbyCatalogSchema extends DerbySchemaImpl implements ICatalogObjec
 		}
 		return super.eIsSet(eFeature);
 	}
+	
+	public Object eGet(EStructuralFeature eFeature) {
 
-	/**
-	 * @generated NOT
-	 */
-	public NotificationChain basicSetCatalog(Catalog newCatalog,
-			NotificationChain msgs) {
-		if (catalog != null && catalog.getDatabase() != null) {
-			ConnectionInfo connectionInfo = DatabaseConnectionRegistry
-					.getInstance().getConnectionForDatabase(
-							catalog.getDatabase());
-			connectionInfo.removeFilterListener(filterListener);
+		if(eFeature.equals(SQLSchemaPackage.Literals.SCHEMA__TABLES))
+			return getTables();
+		
+		if(eFeature.equals(SQLSchemaPackage.Literals.SCHEMA__ROUTINES))
+			return getRoutines();
+
+		if(eFeature.equals(SQLSchemaPackage.Literals.SCHEMA__USER_DEFINED_TYPES))
+			return getUserDefinedTypes();
+
+		
+		return super.eGet(eFeature);
+	}
+	
+	public void eSet(EStructuralFeature eFeature, Object newValue) {
+		
+		if(eFeature.equals(SQLSchemaPackage.Literals.SCHEMA__CATALOG))
+		{
+			Catalog newCatalog = (Catalog)newValue;
+			
+			if (getCatalog() != null && getCatalog().getDatabase() != null) {
+				ConnectionInfo connectionInfo = DatabaseConnectionRegistry
+						.getInstance().getConnectionForDatabase(
+								getCatalog().getDatabase());
+				connectionInfo.removeFilterListener(filterListener);
+			}
+			if (newCatalog != null && newCatalog.getDatabase() != null) {
+				ConnectionInfo connectionInfo = DatabaseConnectionRegistry
+						.getInstance().getConnectionForDatabase(
+								newCatalog.getDatabase());
+				connectionInfo.addFilterListener(filterListener);
+			}
+			
 		}
-		if (newCatalog != null && newCatalog.getDatabase() != null) {
-			ConnectionInfo connectionInfo = DatabaseConnectionRegistry
-					.getInstance().getConnectionForDatabase(
-							newCatalog.getDatabase());
-			connectionInfo.addFilterListener(filterListener);
-		}
-		return super.basicSetCatalog(newCatalog, msgs);
+		
+		super.eSet(eFeature, newValue);
 	}
 
 	private void handleFilterChanged(String filterKey) {
 		boolean refresh = false;
-		if (catalog == null || catalog.getDatabase() == null) return;
+		if (getCatalog() == null || getCatalog().getDatabase() == null) return;
 		ConnectionInfo conInf = DatabaseConnectionRegistry.getInstance()
 				.getConnectionForDatabase(getCatalogDatabase());
 		if (tablesLoaded.booleanValue()

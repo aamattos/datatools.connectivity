@@ -40,7 +40,6 @@ import org.eclipse.datatools.modelbase.sql.schema.Schema;
 import org.eclipse.datatools.modelbase.sql.schema.impl.SchemaImpl;
 import org.eclipse.datatools.modelbase.sql.tables.SQLTablesPackage;
 import org.eclipse.datatools.modelbase.sql.tables.Table;
-import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -82,13 +81,43 @@ public class JDBCSchema extends SchemaImpl implements ICatalogObject {
 
 		RefreshManager.getInstance().referesh(this);
 	}
-
-	public EList getTables() {
-		synchronized (tablesLoaded) {
-			if (!tablesLoaded.booleanValue())
-				loadTables();
+	
+	//ServerExplorerVNodeContentProviderNav
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * ServerExplorerVNodeContentProviderNav no llama getTables, getRoutines .. si no que invoca el eGet para calcular los hijos de un esquema
+	 * En la version original de datatools al no usar atributos dinamicos, el eGet llamaba al getXXX. Ahora no lo hace, por eso tenemos que interceptar la llamada aqui.
+	 * @generated
+	 */
+	  public Object eGet(EStructuralFeature eFeature)
+	  {
+		switch (eFeature.getFeatureID()) {
+			case SQLSchemaPackage.SCHEMA__TABLES:
+			{
+				synchronized (tablesLoaded) {
+					if (!tablesLoaded.booleanValue())
+						loadTables();
+				}
+			}
+			case SQLSchemaPackage.SCHEMA__ROUTINES:
+			{
+				synchronized (routinesLoaded) {
+					if (!routinesLoaded.booleanValue())
+						loadRoutines();
+				}
+			}
+			case SQLSchemaPackage.SCHEMA__USER_DEFINED_TYPES:
+			{
+				synchronized (udtsLoaded) {
+					if (!routinesLoaded.booleanValue())
+						loadUDTs();
+				}
+			}
+					
 		}
-		return super.getTables();
+		return super.eGet(eFeature);
 	}
 
 	protected JDBCTableLoader createTableLoader() {
@@ -146,14 +175,6 @@ public class JDBCSchema extends SchemaImpl implements ICatalogObject {
 				+ ConnectionFilter.TABLE_FILTER;
 	}
 
-	public EList getRoutines() {
-		synchronized (routinesLoaded) {
-			if (!routinesLoaded.booleanValue())
-				loadRoutines();
-		}
-		return super.getRoutines();
-	}
-
 	protected JDBCRoutineLoader createRoutineLoader() {
 		DatabaseDefinition databaseDefinition = RDBCorePlugin.getDefault().getDatabaseDefinitionRegistry().
 			getDefinition(this.getCatalogDatabase());
@@ -207,14 +228,6 @@ public class JDBCSchema extends SchemaImpl implements ICatalogObject {
 		return getCatalog().getName() + ConnectionFilter.FILTER_SEPARATOR
 				+ getName() + ConnectionFilter.FILTER_SEPARATOR
 				+ ConnectionFilter.STORED_PROCEDURE_FILTER;
-	}
-
-	public EList getUserDefinedTypes() {
-		synchronized (udtsLoaded) {
-			if (!routinesLoaded.booleanValue())
-				loadUDTs();
-		}
-		return super.getUserDefinedTypes();
 	}
 
 	protected JDBCUserDefinedTypeLoader createUDTLoader() {
@@ -287,15 +300,12 @@ public class JDBCSchema extends SchemaImpl implements ICatalogObject {
 		return super.eIsSet(eFeature);
 	}
 
-	/**
-	 * @generated NOT
-	 */
-	public NotificationChain basicSetCatalog(Catalog newCatalog,
-			NotificationChain msgs) {
-		if (catalog != null && catalog.getDatabase() != null) {
+	@Override
+	public void setCatalog(Catalog newCatalog) {
+		if (getCatalog() != null && getCatalog().getDatabase() != null) {
 			ConnectionInfo connectionInfo = DatabaseConnectionRegistry
 					.getInstance().getConnectionForDatabase(
-							catalog.getDatabase());
+							getCatalog().getDatabase());
 			connectionInfo.removeFilterListener(filterListener);
 		}
 		if (newCatalog != null && newCatalog.getDatabase() != null) {
@@ -304,7 +314,8 @@ public class JDBCSchema extends SchemaImpl implements ICatalogObject {
 							newCatalog.getDatabase());
 			connectionInfo.addFilterListener(filterListener);
 		}
-		return super.basicSetCatalog(newCatalog, msgs);
+		
+		super.setCatalog(newCatalog);
 	}
 
 	private void handleFilterChanged(String filterKey) {

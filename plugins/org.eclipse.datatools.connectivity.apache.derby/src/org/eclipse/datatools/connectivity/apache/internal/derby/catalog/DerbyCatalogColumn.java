@@ -58,13 +58,13 @@ public class DerbyCatalogColumn extends ColumnImpl implements ICatalogObject{
 	
 	public IdentitySpecifier getIdentitySpecifier(){
 		if(!this.identityLoaded) this.loadIdentity();
-		return this.identitySpecifier;
+		return super.getIdentitySpecifier();
 	}
 
 	
 	public String getDefaultValue(){
 		if(!this.identityLoaded) this.loadIdentity();
-		return this.defaultValue;
+		return super.getDefaultValue();
 	}
 	
 	public boolean eIsSet(EStructuralFeature eFeature) {

@@ -35,12 +35,12 @@ public class DerbyCatalogView extends JDBCView {
 	
 	public QueryExpression getQueryExpression() {
 		if(!this.viewLoaded) this.loadView();
-		return this.queryExpression;
+		return super.getQueryExpression();
 	}
 	
 	public CheckType getCheckType() {
 		if(!this.viewLoaded) this.loadView();
-		return this.checkType;
+		return super.getCheckType();
 	}
 	
 	public boolean eIsSet(EStructuralFeature eFeature) {
